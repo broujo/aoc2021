@@ -8,6 +8,17 @@ let rec transpose l =
   | (x::xs) :: xss ->
       (x :: CCList.map CCList.hd xss) :: transpose (xs :: CCList.map CCList.tl xss)
 
+let score remaining_board last =
+  let sum =
+    CCList.fold_right
+      (fun l acc -> CCList.fold_right (+) l acc)
+      remaining_board
+      0
+  in sum * last
+
+let remove_last l last =
+  CCList.map (fun e -> CCList.filter (fun a -> a <> last) e) l
+
 let solve_board b draws =
   let row_l = b
   in let column_l = transpose row_l
@@ -15,10 +26,10 @@ let solve_board b draws =
     match draws with
     | [] -> 0,draws
     | t :: q ->
-        let r2 = CCList.map (fun row -> CCList.filter (fun a -> a <> t) row) rows
-        in let c2 = CCList.map (fun col -> CCList.filter (fun a -> a <> t) col) columns
+        let r2 = remove_last rows t
+        in let c2 = remove_last columns t
         in if CCList.exists (fun l -> l = []) (r2 @ c2)
-        then ((CCList.fold_right (fun l acc -> CCList.fold_right (+) l acc) r2 0)*t),(CCList.rev (t::acc))
+        then (score r2 t),(CCList.rev (t::acc))
         else aux r2 c2 q (t::acc)
   in aux row_l column_l draws []
 
@@ -29,7 +40,6 @@ let solve boards draws =
       in if ((CCList.length dr2) > (CCList.length dr)) then (s2,dr2) else (s,dr))
     boards
     (0,[])
-
         
 let test_input =
   "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
