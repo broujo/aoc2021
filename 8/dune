@@ -1,0 +1,3 @@
+(executables
+  (names e1 e2 e2_opt)
+  (libraries str helpers containers containers-data angstrom ocamlgraph))
