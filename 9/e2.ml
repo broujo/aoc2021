@@ -40,8 +40,7 @@ let bassin_size low m =
         let m = M.update low (function | None -> None | _ -> Some(i,Marked)) m in
         get_neigh_indices low
         |> CCFun.flip (CCList.fold_right (fun p (m,acc) -> bassins p (m,acc))) (m,low::acc) in
-  let m = M.map (fun e -> e,Unmarked) m in
-  let _,l = bassins low (m,[]) in CCList.length l
+  let map,l = bassins low (m,[]) in map,(CCList.length l)
 
 let make_map m l =
   CCList.foldi
@@ -67,7 +66,12 @@ let run input =
   map
   |> M.filter (fun p _ -> check_neigh map p)
   |> M.to_list
-  |> CCList.map (fun (low,_) -> bassin_size low map)
+  |> CCList.fold_filter_map (fun map (low,_) ->
+      let map,size = bassin_size low map in
+      if size = 0
+      then map,None
+      else map,Some(size)) (M.map (fun e -> e,Unmarked) map)
+  |> snd
   |> CCList.sort (fun a b -> CCInt.compare b a)
   |> (fun l ->
       match l with
