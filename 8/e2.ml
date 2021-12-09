@@ -140,7 +140,7 @@ let run input =
   |> CCString.trim
   |> CCString.split ~by:"\n"
   |> CCList.map (fun t -> solve t)
-  |> (fun e -> CCList.fold_right (fun s acc -> s + acc) e 0)
+  |> CCFun.flip (CCList.fold_right (fun s acc -> s + acc)) 0
 
 let () =
   assert ((run test_input) = 61229);
