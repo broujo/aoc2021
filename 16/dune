@@ -1,0 +1,4 @@
+(executables
+  (names e1 e2)
+  (libraries str helpers containers containers-data angstrom)
+  (modes byte exe))
